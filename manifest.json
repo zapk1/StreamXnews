@@ -1,0 +1,22 @@
+
+{
+  "name": "StreamXNews",
+  "short_name": "StreamXNews",
+  "description": "Daily news on streamXnews ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#87CEEB",
+  "icons": [
+    {
+      "src": "https://i.postimg.cc/tRwZ7CD9/Chat-GPT-Image-Dec-4-2025-07-28-52-PM.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.postimg.cc/tRwZ7CD9/Chat-GPT-Image-Dec-4-2025-07-28-52-PM.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
