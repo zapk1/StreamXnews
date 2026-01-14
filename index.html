@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+
+
+     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <link rel="icon" href="https://i.postimg.cc/VkSMHCDc/Chat-GPT-Image-Jan-14-2026-11-42-21-AM.png">
+      <link rel="stylesheet" href="style.css">
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StreamX News - Your Daily Dose of News</title>
@@ -12,9 +21,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-    <meta name="google-adsense-account" content="ca-pub-9548659809623237">
+      <meta name="google-adsense-account" content="ca-pub-9548659809623237">
 
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9548659809623237" crossorigin="anonymous"></script>
+   
     
     <style>
         * {
@@ -398,6 +408,75 @@
             height: 14px;
         }
 
+        /* Image Gallery - Horizontal Scroll */
+        .image-gallery {
+            display: flex;
+            gap: 0.75rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .image-gallery::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .image-gallery::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .image-gallery::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .image-gallery::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .gallery-image {
+            flex-shrink: 0;
+            width: 200px;
+            height: 150px;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            cursor: pointer;
+            scroll-snap-align: start;
+            position: relative;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .gallery-image:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .gallery-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .gallery-image:hover::after {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
         /* Articles Grid */
         .articles-grid {
             display: grid;
@@ -476,20 +555,98 @@
             overflow: hidden;
         }
 
-        /* Loading Skeleton */
-        .skeleton {
-            background: linear-gradient(90deg, 
-                rgba(255,255,255,0.05) 25%, 
-                rgba(255,255,255,0.1) 50%, 
-                rgba(255,255,255,0.05) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
+        /* Image Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
             border-radius: 0.5rem;
         }
 
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+        .lightbox-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.1);
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .lightbox-prev {
+            left: 1rem;
+        }
+
+        .lightbox-next {
+            right: 1rem;
+        }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
         }
 
         /* Footer */
@@ -569,6 +726,11 @@
 
         .btn-primary:hover {
             background: rgba(255, 255, 255, 0.9);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .btn-secondary {
@@ -661,6 +823,105 @@
             gap: 0.75rem;
         }
 
+        /* Image Upload */
+        .image-upload-container {
+            border: 2px dashed var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-upload-container:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .image-upload-container.dragging {
+            border-color: #22d3ee;
+            background: rgba(34, 211, 238, 0.1);
+        }
+
+        .upload-icon {
+            margin: 0 auto 1rem;
+            width: 48px;
+            height: 48px;
+            color: var(--text-tertiary);
+        }
+
+        .upload-text {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: var(--text-tertiary);
+            font-size: 0.75rem;
+        }
+
+        .upload-input {
+            display: none;
+        }
+
+        .preview-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .preview-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-remove {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background: rgba(239, 68, 68, 0.9);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .preview-remove:hover {
+            background: #ef4444;
+            transform: scale(1.1);
+        }
+
+        .upload-progress {
+            margin-top: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #9b59b6);
+            transition: width 0.3s;
+        }
+
+        /* Article List */
         .article-list-item {
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
@@ -715,10 +976,12 @@
             cursor: pointer;
             border-radius: 0.375rem;
             transition: all 0.2s;
+            color: var(--text-secondary);
         }
 
         .btn-icon:hover {
             background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
         }
 
         .btn-icon svg {
@@ -769,6 +1032,35 @@
             color: rgba(255, 255, 255, 0.2);
         }
 
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: white;
+            color: black;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 200;
+            animation: slideInRight 0.3s ease-out;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.success {
+            background: #4ade80;
+            color: white;
+        }
+
+        .toast.error {
+            background: #ef4444;
+            color: white;
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from {
@@ -799,6 +1091,31 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         /* Responsive */
@@ -876,227 +1193,11 @@
             .article-list-actions {
                 justify-content: flex-start;
             }
-        }
 
-        /* Article Detail Page */
-        .article-detail {
-            max-width: 48rem;
-            margin: 0 auto;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            margin-bottom: 2rem;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            border-radius: 0.5rem;
-            transition: all 0.2s;
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-        }
-
-        .article-detail-header {
-            margin-bottom: 2rem;
-        }
-
-        .article-detail-category {
-            margin-bottom: 1.5rem;
-        }
-
-        .article-detail-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-        }
-
-        .article-detail-summary {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        }
-
-        .article-detail-author {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 2rem;
-        }
-
-        .author-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .author-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #00d4ff 0%, #9b59b6 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .author-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .author-name {
-            font-weight: 600;
-        }
-
-        .author-label {
-            font-size: 0.875rem;
-            color: var(--text-tertiary);
-        }
-
-        .article-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .article-detail-image {
-            width: 100%;
-            aspect-ratio: 16/9;
-            object-fit: cover;
-            border-radius: 1rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .article-detail-content {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.125rem;
-            line-height: 1.8;
-        }
-
-        .article-detail-content h1,
-        .article-detail-content h2,
-        .article-detail-content h3 {
-            color: var(--text-primary);
-            font-weight: 700;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .article-detail-content h2 {
-            font-size: 1.875rem;
-        }
-
-        .article-detail-content h3 {
-            font-size: 1.5rem;
-        }
-
-        .article-detail-content p {
-            margin-bottom: 1.5rem;
-        }
-
-        .article-detail-content ul,
-        .article-detail-content ol {
-            margin-bottom: 1.5rem;
-            padding-left: 1.5rem;
-        }
-
-        .article-detail-content li {
-            margin-bottom: 0.5rem;
-        }
-
-        .article-detail-content strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .article-detail-content a {
-            color: #22d3ee;
-            text-decoration: none;
-        }
-
-        .article-detail-content a:hover {
-            text-decoration: underline;
-        }
-
-        .article-detail-content code {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.125rem 0.375rem;
-            border-radius: 0.25rem;
-            font-size: 0.875em;
-            color: #22d3ee;
-        }
-
-        .related-articles {
-            margin-top: 4rem;
-            padding-top: 3rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            background: white;
-            color: black;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            z-index: 200;
-            animation: slideInRight 0.3s ease-out;
-            display: none;
-        }
-
-        .toast.show {
-            display: block;
-        }
-
-        .toast.success {
-            background: #4ade80;
-            color: white;
-        }
-
-        .toast.error {
-            background: #ef4444;
-            color: white;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
+            .gallery-image {
+                width: 150px;
+                height: 120px;
             }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -1106,6 +1207,23 @@
 
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
+
+    <!-- Image Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">
+            <i data-lucide="x"></i>
+        </button>
+        <button class="lightbox-nav lightbox-prev" onclick="navigateLightbox(-1)">
+            <i data-lucide="chevron-left"></i>
+        </button>
+        <div class="lightbox-content">
+            <img id="lightboxImage" class="lightbox-image" src="" alt="">
+            <div id="lightboxCounter" class="lightbox-counter"></div>
+        </div>
+        <button class="lightbox-nav lightbox-next" onclick="navigateLightbox(1)">
+            <i data-lucide="chevron-right"></i>
+        </button>
+    </div>
 
     <!-- Navigation -->
     <nav class="navbar">
@@ -1125,9 +1243,7 @@
 
     <!-- Main Content -->
     <div id="mainContent">
-        <!-- Home Page -->
         <div id="homePage" class="container">
-            <!-- Hero Section -->
             <div class="hero">
                 <div class="hero-badge">
                     <i data-lucide="sparkles"></i>
@@ -1142,7 +1258,6 @@
                 </p>
             </div>
 
-            <!-- Search and Filters -->
             <div class="controls">
                 <div class="search-container">
                     <i data-lucide="search" class="search-icon"></i>
@@ -1185,11 +1300,12 @@
                 </div>
             </div>
 
-            <!-- Featured Article -->
             <div id="featuredSection"></div>
 
 
-<!-- ALL 8 DEFAULT ARTICLES - PASTE THIS IN YOUR HTML BODY -->
+
+
+            <!-- ALL 8 DEFAULT ARTICLES - PASTE THIS IN YOUR HTML BODY -->
 
 <div class="container">
     <!-- Article 1 - FEATURED -->
@@ -1330,9 +1446,6 @@
 
 
 
-
-
-            <!-- Articles Grid -->
             <div>
                 <div class="section-header">
                     <span class="section-line"></span>
@@ -1343,7 +1456,6 @@
             </div>
         </div>
 
-        <!-- Article Detail Page -->
         <div id="articlePage" class="container article-detail" style="display: none;"></div>
     </div>
 
@@ -1385,7 +1497,6 @@
                 </div>
             </div>
 
-            <!-- Article Form -->
             <div id="articleForm" class="admin-form" style="display: none;">
                 <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">
                     <span id="formTitle">Create New Article</span>
@@ -1426,8 +1537,23 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Image URL</label>
-                        <input type="url" class="form-input" id="articleImage" placeholder="https://...">
+                        <label class="form-label">Images (Upload up to 5 images)</label>
+                        <div class="image-upload-container" id="imageUploadContainer">
+                            <i data-lucide="upload" class="upload-icon"></i>
+                            <p class="upload-text">Click to upload or drag & drop</p>
+                            <p class="upload-hint">PNG, JPG up to 5MB (max 5 images)</p>
+                            <input 
+                                type="file" 
+                                id="imageUploadInput" 
+                                class="upload-input" 
+                                accept="image/*" 
+                                multiple
+                            >
+                        </div>
+                        <div id="previewImages" class="preview-images"></div>
+                        <div id="uploadProgress" class="upload-progress" style="display: none;">
+                            <div id="uploadProgressBar" class="upload-progress-bar" style="width: 0%;"></div>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -1438,7 +1564,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
                             <i data-lucide="save"></i>
                             <span id="submitBtnText">Publish</span>
                         </button>
@@ -1449,7 +1575,6 @@
                 </form>
             </div>
 
-            <!-- Articles List -->
             <div>
                 <h2 style="font-size: 1.25rem; margin-bottom: 1rem;">
                     All Articles (<span id="adminArticleCount">0</span>)
@@ -1472,10 +1597,8 @@
         </div>
     </footer>
 
-    <script>
-        // ========================================
+<script>
         // Firebase Configuration
-        // ========================================
         const firebaseConfig = {
             databaseURL: "https://blackrituals-default-rtdb.firebaseio.com"
         };
@@ -1484,16 +1607,20 @@
         const database = firebase.database();
         const articlesRef = database.ref('articles');
 
-        // ========================================
-        // Global State
-        // ========================================
         let allArticles = [];
         let currentCategory = 'All';
         let searchQuery = '';
         let editingArticleId = null;
         let clickCount = 0;
         let clickTimer = null;
+        let uploadedImages = [];
+        let lightboxImages = [];
+        let currentLightboxIndex = 0;
 
+
+
+
+        
         // ========================================
         // Default Articles Data
         // ========================================
@@ -1580,23 +1707,8 @@
             }
         ];
 
-        // ========================================
-        // Initialize Default Articles
-        // ========================================
-        function initializeDefaultArticles() {
-            articlesRef.once('value').then((snapshot) => {
-                if (!snapshot.exists() || snapshot.numChildren() === 0) {
-                    defaultArticles.forEach(article => {
-                        articlesRef.push(article);
-                    });
-                    showToast('Default articles loaded!', 'success');
-                }
-            });
-        }
 
-        // ========================================
         // Utility Functions
-        // ========================================
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -1608,8 +1720,7 @@
 
         function formatDate(dateString) {
             const date = new Date(dateString);
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            return date.toLocaleDateString('en-US', options);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
         }
 
         function getCategoryClass(category) {
@@ -1647,11 +1758,63 @@
             });
         }
 
-        // ========================================
+        // Get images from article (handles both old and new format)
+        function getArticleImages(article) {
+            if (article.images && Array.isArray(article.images) && article.images.length > 0) {
+                return article.images;
+            } else if (article.image_url) {
+                return [article.image_url];
+            }
+            return ['https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80'];
+        }
+
+        // Image Lightbox
+        function openLightbox(images, index) {
+            lightboxImages = images;
+            currentLightboxIndex = index;
+            updateLightboxImage();
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function navigateLightbox(direction) {
+            currentLightboxIndex = (currentLightboxIndex + direction + lightboxImages.length) % lightboxImages.length;
+            updateLightboxImage();
+        }
+
+        function updateLightboxImage() {
+            document.getElementById('lightboxImage').src = lightboxImages[currentLightboxIndex];
+            document.getElementById('lightboxCounter').textContent = 
+                `${currentLightboxIndex + 1} / ${lightboxImages.length}`;
+            lucide.createIcons();
+        }
+
+        // Render Image Gallery
+        function renderImageGallery(images) {
+            if (!images || images.length <= 1) return '';
+            
+            return `
+                <div class="image-gallery">
+                    ${images.map((img, index) => `
+                        <div class="gallery-image" onclick='openLightbox(${JSON.stringify(images)}, ${index})'>
+                            <img src="${img}" alt="Image ${index + 1}">
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
         // Article Rendering
-        // ========================================
         function renderFeaturedArticle(article) {
             if (!article) return '';
+            
+            const images = getArticleImages(article);
+            const mainImage = images[0];
             
             return `
                 <div class="section-header">
@@ -1661,7 +1824,7 @@
                 <div class="featured-article">
                     <div class="featured-card" onclick="showArticle('${article.id}')">
                         <div class="featured-image">
-                            <img src="${article.image_url || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80'}" alt="${article.title}">
+                            <img src="${mainImage}" alt="${article.title}">
                             <div class="category-badge ${getCategoryClass(article.category)}">
                                 ${article.category}
                             </div>
@@ -1688,10 +1851,13 @@
         }
 
         function renderArticleCard(article, index) {
+            const images = getArticleImages(article);
+            const mainImage = images[0];
+                
             return `
                 <div class="article-card" onclick="showArticle('${article.id}')" style="animation-delay: ${index * 0.1}s">
                     <div class="article-image">
-                        <img src="${article.image_url || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80'}" alt="${article.title}">
+                        <img src="${mainImage}" alt="${article.title}">
                         <div class="category-badge ${getCategoryClass(article.category)}">
                             ${article.category}
                         </div>
@@ -1728,7 +1894,6 @@
             const featuredArticle = filtered.find(a => a.featured);
             const regularArticles = filtered.filter(a => a.id !== featuredArticle?.id);
 
-            // Render featured
             const featuredSection = document.getElementById('featuredSection');
             if (featuredArticle && currentCategory === 'All' && !searchQuery) {
                 featuredSection.innerHTML = renderFeaturedArticle(featuredArticle);
@@ -1736,7 +1901,6 @@
                 featuredSection.innerHTML = '';
             }
 
-            // Render grid
             const grid = document.getElementById('articlesGrid');
             if (regularArticles.length === 0) {
                 grid.innerHTML = `
@@ -1749,7 +1913,6 @@
                 grid.innerHTML = regularArticles.map((article, index) => renderArticleCard(article, index)).join('');
             }
 
-            // Update section title
             document.getElementById('sectionTitle').textContent = 
                 currentCategory === 'All' ? 'Latest News' : currentCategory;
             document.getElementById('articleCount').textContent = `(${filtered.length})`;
@@ -1757,9 +1920,7 @@
             lucide.createIcons();
         }
 
-        // ========================================
         // Article Detail Page
-        // ========================================
         function showArticle(articleId) {
             const article = allArticles.find(a => a.id === articleId);
             if (!article) return;
@@ -1770,63 +1931,53 @@
             homePage.style.display = 'none';
             articlePage.style.display = 'block';
 
-            // Get related articles
             const related = allArticles
                 .filter(a => a.category === article.category && a.id !== article.id)
                 .slice(0, 3);
 
+            const images = getArticleImages(article);
+            const mainImage = images[0];
+
             articlePage.innerHTML = `
-                <button class="back-btn" onclick="showHome()">
+                <button class="back-btn" onclick="showHome()" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: rgba(255,255,255,0.6); cursor: pointer; margin-bottom: 2rem;">
                     <i data-lucide="arrow-left"></i>
                     <span>Back to News</span>
                 </button>
 
                 <article>
-                    <div class="article-detail-header">
-                        <div class="article-detail-category">
+                    <div style="margin-bottom: 2rem;">
+                        <div style="margin-bottom: 1.5rem;">
                             <div class="category-badge ${getCategoryClass(article.category)}">
                                 ${article.category}
                             </div>
                         </div>
-                        <h1 class="article-detail-title">${article.title}</h1>
-                        <p class="article-detail-summary">${article.summary}</p>
-                        <div class="article-detail-author">
-                            ${article.author ? `
-                                <div class="author-info">
-                                    <div class="author-avatar">${article.author[0]}</div>
-                                    <div class="author-details">
-                                        <div class="author-name">${article.author}</div>
-                                        <div class="author-label">Author</div>
-                                    </div>
+                        <h1 style="font-size: 2.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 1.5rem;">${article.title}</h1>
+                        <p style="font-size: 1.25rem; color: rgba(255,255,255,0.6); line-height: 1.6; margin-bottom: 2rem;">${article.summary}</p>
+                        
+                        ${article.author ? `
+                            <div style="display: flex; align-items: center; gap: 0.75rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #00d4ff 0%, #9b59b6 100%); display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                                    ${article.author[0]}
                                 </div>
-                            ` : `
-                                <div class="meta-item">
-                                    <i data-lucide="clock"></i>
-                                    <span>${formatDate(article.created_date)}</span>
+                                <div>
+                                    <div style="font-weight: 600;">${article.author}</div>
+                                    <div style="font-size: 0.875rem; color: rgba(255,255,255,0.4);">${formatDate(article.created_date)}</div>
                                 </div>
-                            `}
-                            <div class="article-actions">
-                                <button class="btn-icon">
-                                    <i data-lucide="share-2"></i>
-                                </button>
-                                <button class="btn-icon">
-                                    <i data-lucide="bookmark"></i>
-                                </button>
                             </div>
-                        </div>
+                        ` : ''}
                     </div>
 
-                    ${article.image_url ? `
-                        <img src="${article.image_url}" alt="${article.title}" class="article-detail-image">
-                    ` : ''}
+                    <img src="${mainImage}" alt="${article.title}" onclick='openLightbox(${JSON.stringify(images)}, 0)' style="width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 1rem; margin-bottom: 1.5rem; cursor: pointer;">
+                    
+                    ${renderImageGallery(images)}
 
-                    <div class="article-detail-content">
+                    <div style="color: rgba(255,255,255,0.7); font-size: 1.125rem; line-height: 1.8; margin-top: 2rem;">
                         ${formatMarkdown(article.content || article.summary)}
                     </div>
                 </article>
 
                 ${related.length > 0 ? `
-                    <div class="related-articles">
+                    <div style="margin-top: 4rem; padding-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1);">
                         <div class="section-header">
                             <span class="section-line"></span>
                             <span>Related Stories</span>
@@ -1851,30 +2002,103 @@
         function formatMarkdown(text) {
             if (!text) return '';
             
-            // Convert markdown to HTML
             let html = text
-                // Headers
                 .replace(/^### (.*$)/gim, '<h3>$1</h3>')
                 .replace(/^## (.*$)/gim, '<h2>$1</h2>')
                 .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                // Bold
                 .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-                // Italic
                 .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-                // Links
                 .replace(/\[([^\]]+)\]\(([^\)]+)\)/gim, '<a href__="$2" target="_blank">$1</a>')
-                // Line breaks
                 .replace(/\n\n/gim, '</p><p>')
-                // Lists
                 .replace(/^\- (.+)$/gim, '<li>$1</li>')
                 .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
             
             return `<p>${html}</p>`;
         }
 
-        // ========================================
+        // Image Upload
+        function handleImageUpload(files) {
+            const fileArray = Array.from(files);
+            const maxFiles = 5;
+            
+            if (uploadedImages.length + fileArray.length > maxFiles) {
+                showToast(`Maximum ${maxFiles} images allowed!`, 'error');
+                return;
+            }
+
+            const uploadPromises = fileArray.map(file => uploadImage(file));
+            
+            document.getElementById('uploadProgress').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+            
+            Promise.all(uploadPromises)
+                .then(() => {
+                    document.getElementById('uploadProgress').style.display = 'none';
+                    document.getElementById('submitBtn').disabled = false;
+                    showToast('Images uploaded successfully!', 'success');
+                    updateImagePreviews();
+                })
+                .catch(error => {
+                    document.getElementById('uploadProgress').style.display = 'none';
+                    document.getElementById('submitBtn').disabled = false;
+                    showToast('Upload failed: ' + error.message, 'error');
+                });
+        }
+
+        function uploadImage(file) {
+            return new Promise((resolve, reject) => {
+                if (file.size > 5 * 1024 * 1024) {
+                    reject(new Error('File size exceeds 5MB'));
+                    return;
+                }
+
+                const reader = new FileReader();
+                
+                reader.onloadstart = () => {
+                    document.getElementById('uploadProgressBar').style.width = '0%';
+                };
+                
+                reader.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const progress = (event.loaded / event.total) * 100;
+                        document.getElementById('uploadProgressBar').style.width = progress + '%';
+                    }
+                };
+                
+                reader.onload = (e) => {
+                    const base64String = e.target.result;
+                    uploadedImages.push(base64String);
+                    document.getElementById('uploadProgressBar').style.width = '100%';
+                    resolve(base64String);
+                };
+                
+                reader.onerror = (error) => {
+                    reject(error);
+                };
+                
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateImagePreviews() {
+            const container = document.getElementById('previewImages');
+            container.innerHTML = uploadedImages.map((url, index) => `
+                <div class="preview-item">
+                    <img src="${url}" alt="Preview ${index + 1}">
+                    <button class="preview-remove" onclick="removeImage(${index}); event.stopPropagation();">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            updateImagePreviews();
+        }
+
         // Admin Functions
-        // ========================================
         function openAdminPanel() {
             document.getElementById('adminPanel').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -1897,12 +2121,15 @@
 
         function showArticleForm() {
             document.getElementById('articleForm').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function hideArticleForm() {
             document.getElementById('articleForm').style.display = 'none';
             document.getElementById('articleFormElement').reset();
             editingArticleId = null;
+            uploadedImages = [];
+            updateImagePreviews();
             document.getElementById('formTitle').textContent = 'Create New Article';
             document.getElementById('submitBtnText').textContent = 'Publish';
         }
@@ -1921,7 +2148,9 @@
                 return;
             }
 
-            list.innerHTML = allArticles.map(article => `
+            list.innerHTML = allArticles.map(article => {
+                const images = getArticleImages(article);
+                return `
                 <div class="article-list-item">
                     <div class="article-list-content">
                         <div class="article-list-info">
@@ -1940,6 +2169,7 @@
                                 </div>
                                 ${article.author ? `<span>By ${article.author}</span>` : ''}
                                 <span>${formatDate(article.created_date)}</span>
+                                <span>${images.length} image(s)</span>
                             </div>
                         </div>
                         <div class="article-list-actions">
@@ -1952,7 +2182,7 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
 
             lucide.createIcons();
         }
@@ -1970,11 +2200,12 @@
             document.getElementById('articleContent').value = article.content || '';
             document.getElementById('articleCategory').value = article.category;
             document.getElementById('articleAuthor').value = article.author || '';
-            document.getElementById('articleImage').value = article.image_url || '';
             document.getElementById('articleFeatured').checked = article.featured || false;
+            
+            uploadedImages = getArticleImages(article);
+            updateImagePreviews();
 
             showArticleForm();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function deleteArticle(articleId) {
@@ -1985,13 +2216,11 @@
                     showToast('Article deleted successfully!', 'success');
                 })
                 .catch(error => {
-                    showToast('Error deleting article: ' + error.message, 'error');
+                    showToast('Error: ' + error.message, 'error');
                 });
         }
 
-        // ========================================
         // Event Listeners
-        // ========================================
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const password = document.getElementById('adminPassword').value;
@@ -2003,12 +2232,32 @@
             }
         });
 
-        document.getElementById('newArticleBtn').addEventListener('click', () => {
-            showArticleForm();
-        });
-
+        document.getElementById('newArticleBtn').addEventListener('click', showArticleForm);
         document.getElementById('closeAdminBtn').addEventListener('click', closeAdminPanel);
         document.getElementById('cancelFormBtn').addEventListener('click', hideArticleForm);
+
+        const uploadContainer = document.getElementById('imageUploadContainer');
+        const uploadInput = document.getElementById('imageUploadInput');
+
+        uploadContainer.addEventListener('click', () => uploadInput.click());
+        uploadInput.addEventListener('change', (e) => {
+            handleImageUpload(e.target.files);
+        });
+
+        uploadContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadContainer.classList.add('dragging');
+        });
+
+        uploadContainer.addEventListener('dragleave', () => {
+            uploadContainer.classList.remove('dragging');
+        });
+
+        uploadContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadContainer.classList.remove('dragging');
+            handleImageUpload(e.dataTransfer.files);
+        });
 
         document.getElementById('articleFormElement').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -2019,7 +2268,7 @@
                 content: document.getElementById('articleContent').value,
                 category: document.getElementById('articleCategory').value,
                 author: document.getElementById('articleAuthor').value,
-                image_url: document.getElementById('articleImage').value,
+                images: uploadedImages,
                 featured: document.getElementById('articleFeatured').checked,
                 created_date: new Date().toISOString()
             };
@@ -2027,31 +2276,29 @@
             if (editingArticleId) {
                 articlesRef.child(editingArticleId).update(articleData)
                     .then(() => {
-                        showToast('Article updated successfully!', 'success');
+                        showToast('Article updated!', 'success');
                         hideArticleForm();
                     })
                     .catch(error => {
-                        showToast('Error updating article: ' + error.message, 'error');
+                        showToast('Error: ' + error.message, 'error');
                     });
             } else {
                 articlesRef.push(articleData)
                     .then(() => {
-                        showToast('Article published successfully!', 'success');
+                        showToast('Article published!', 'success');
                         hideArticleForm();
                     })
                     .catch(error => {
-                        showToast('Error creating article: ' + error.message, 'error');
+                        showToast('Error: ' + error.message, 'error');
                     });
             }
         });
 
-        // Search
         document.getElementById('searchInput').addEventListener('input', (e) => {
             searchQuery = e.target.value;
             renderArticles();
         });
 
-        // Category filters
         document.getElementById('categoryFilters').addEventListener('click', (e) => {
             const btn = e.target.closest('.category-btn');
             if (!btn) return;
@@ -2062,7 +2309,6 @@
             renderArticles();
         });
 
-        // Double-click logo to open admin
         document.getElementById('logoContainer').addEventListener('click', () => {
             clickCount++;
             
@@ -2077,7 +2323,22 @@
             }
         });
 
-        // Firebase real-time listener
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target.id === 'lightbox') {
+                closeLightbox();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            const lightbox = document.getElementById('lightbox');
+            if (!lightbox.classList.contains('active')) return;
+            
+            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            if (e.key === 'ArrowRight') navigateLightbox(1);
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        // Firebase listener
         articlesRef.on('value', (snapshot) => {
             allArticles = [];
             snapshot.forEach((childSnapshot) => {
@@ -2087,9 +2348,7 @@
                 });
             });
             
-            // Sort by date
             allArticles.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-            
             renderArticles();
             
             if (document.getElementById('adminContent').style.display === 'block') {
@@ -2097,20 +2356,11 @@
             }
         });
 
-        // ========================================
         // Initialize
-        // ========================================
         document.getElementById('currentYear').textContent = new Date().getFullYear();
         updateGradient();
-        initializeDefaultArticles();
         lucide.createIcons();
-
-        // Update gradient daily
         setInterval(updateGradient, 60000);
     </script>
 </body>
-
 </html>
-
-
-
