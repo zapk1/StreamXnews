@@ -5,8 +5,8 @@
   "description": "Daily news on streamXnews ",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#FFFFFF",
-  "theme_color": "#87CEEB",
+  "background_color": "##0B1022",
+  "theme_color": "#0B1022",
   "icons": [
     {
       "src": "https://i.postimg.cc/VkSMHCDc/Chat-GPT-Image-Jan-14-2026-11-42-21-AM.png",
