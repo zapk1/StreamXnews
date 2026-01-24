@@ -1980,16 +1980,8 @@
         // Default Articles Data
         const defaultArticles = [
         
-          {
-                title: Someone is talking from Limpopo  🤣🇿🇦",
-                summary: "Boyz Are you 👂 very well🤣.",
-                content: "Baa Bolela 🫢😭🍑",
-                category: "Fun",
-                image_url: "https://i.postimg.cc/yNmVtrqY/FB-IMG-1767696323411.jpg",
-                author: "StreamX News ",
-                featured: true 
-            },
-            {
+        
+                    {
                 title: "Our New Year 2026 calender 🤣🇿🇦",
                 summary: "Our New year 2026 calendar 🔞🤣.",
                 content: "We have already started our new year calendar of 2026 😭🤣.",
@@ -1998,7 +1990,15 @@
                 author: "StreamX News ",
                 featured: true 
             },
-        
+              {
+                title: Someone is talking from Limpopo  🤣🇿🇦",
+                summary: "Boyz Are you 👂 very well🤣.",
+                content: "Baa Bolela 🫢😭🍑",
+                category: "Fun",
+                image_url: "https://i.postimg.cc/yNmVtrqY/FB-IMG-1767696323411.jpg",
+                author: "StreamX News ",
+                featured: true 
+            },
         
             {
                 title: "Apple Unveils Revolutionary AI-Powered MacBook Pro with Neural Engine 3.0",
@@ -2072,9 +2072,7 @@
                 author: "Dr. Lisa Chang",
                 featured: false
             }
-            
-        
-            
+                      
         ];
 
         // Gradient colors array
@@ -2314,40 +2312,20 @@
         }
 
         function renderArticles() {
-    // Filter Firebase articles
-    let filtered = allArticles.filter(article => {
-        const matchesCategory = currentCategory === 'All' || article.category === currentCategory;
-        const matchesSearch = !searchQuery || 
-            article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            article.summary.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch;
-    });
+            if (allArticles.length === 0) {
+                document.getElementById('firebaseArticlesSection').style.display = 'none';
+                return;
+            }
 
-    // Filter default articles
-    let filteredDefaults = defaultArticles.filter(article => {
-        const matchesCategory = currentCategory === 'All' || article.category === currentCategory;
-        const matchesSearch = !searchQuery || 
-            article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            article.summary.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch;
-    });
+            document.getElementById('firebaseArticlesSection').style.display = 'block';
 
-    // Show/hide default articles based on filters
-    const defaultSection = document.getElementById('defaultArticles');
-    if (filteredDefaults.length === 0 && (currentCategory !== 'All' || searchQuery)) {
-        defaultSection.style.display = 'none';
-    } else {
-        defaultSection.style.display = 'block';
-    }
-
-    // Show/hide Firebase section
-    if (filtered.length === 0) {
-        document.getElementById('firebaseArticlesSection').style.display = 'none';
-    } else {
-        document.getElementById('firebaseArticlesSection').style.display = 'block';
-    }
-
-    
+            let filtered = allArticles.filter(article => {
+                const matchesCategory = currentCategory === 'All' || article.category === currentCategory;
+                const matchesSearch = !searchQuery || 
+                    article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    article.summary.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
 
             const featuredArticle = filtered.find(a => a.featured);
             const regularArticles = filtered.filter(a => a.id !== featuredArticle?.id);
@@ -2626,12 +2604,6 @@
                 reader.readAsDataURL(file);
             });
         }
-
-
-
-
-
-
 
         function updateImagePreviews() {
             const container = document.getElementById('previewImages');
