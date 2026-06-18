@@ -2674,6 +2674,25 @@ const grandTotal = subtotal + deliveryTotal;
             createdAt: new Date().toISOString(),
             attended: false
         });
+        
+        
+        // Send email notification for new order
+fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        access_key: '73e50069-1b24-4620-9628-32527ad9585b',
+        subject: '🛒 New Order - Dark Master Store',
+        from_name: 'Dark Master Store',
+        name: customerInfo.fullName,
+        email: customerInfo.email,
+        phone: customerInfo.phone,
+        address: customerInfo.address + ', ' + customerInfo.city,
+        items: window.appState.cart.map(i => i.name + ' x' + i.quantity + ' = R' + (i.price * i.quantity).toFixed(2)).join(' | '),
+        total: 'R' + grandTotal.toFixed(2),
+        message: 'New order from ' + customerInfo.fullName + ' - Total: R' + grandTotal.toFixed(2)
+    })
+});
 
         // Save order info for payment page
         window.appState.lastOrder = {
