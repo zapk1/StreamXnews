@@ -2676,23 +2676,28 @@ const grandTotal = subtotal + deliveryTotal;
         });
         
         
-        // Send email notification for new order
-fetch('https://api.web3forms.com/submit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        access_key: '73e50069-1b24-4620-9628-32527ad9585b',
-        subject: '🛒 New Order - Dark Master Store',
-        from_name: 'Dark Master Store',
-        name: customerInfo.fullName,
-        email: customerInfo.email,
-        phone: customerInfo.phone,
-        address: customerInfo.address + ', ' + customerInfo.city,
-        items: window.appState.cart.map(i => i.name + ' x' + i.quantity + ' = R' + (i.price * i.quantity).toFixed(2)).join(' | '),
-        total: 'R' + grandTotal.toFixed(2),
-        message: 'New order from ' + customerInfo.fullName + ' - Total: R' + grandTotal.toFixed(2)
-    })
-});
+        // Send email notification for new order - EmailJS
+        try {
+            await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    service_id: 'service_s5xw50d',
+                    template_id: 'template_uok7527',
+                    user_id: 'qCNJIG5387KRxY4Zn',
+                    template_params: {
+                        customer_name: customerInfo.fullName,
+                        customer_email: customerInfo.email,
+                        customer_phone: customerInfo.phone,
+                        customer_address: customerInfo.address + ', ' + customerInfo.city,
+                        order_items: window.appState.cart.map(i => i.name + ' x' + i.quantity + ' = R' + (i.price * i.quantity).toFixed(2)).join(' | '),
+                        order_total: 'R' + grandTotal.toFixed(2)
+                    }
+                })
+            });
+        } catch(emailErr) {
+            console.error('Email failed:', emailErr);
+        }
 
         // Save order info for payment page
         window.appState.lastOrder = {
@@ -2718,7 +2723,52 @@ fetch('https://api.web3forms.com/submit', {
     }
 };
 
-        
+     
+// Put this where you submit an order in your app
+function sendOrderEmail(orderData) {
+
+  // Build the product rows with images
+  let orderItemsHTML = '';
+
+  orderData.items.forEach((item, index) => {
+    const bgColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
+    orderItemsHTML += `
+      <tr style="background: ${bgColor};">
+        <td style="padding: 10px; border-bottom: 1px solid #f3f4f6;">
+          <table cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="vertical-align: middle; padding-right: 10px;">
+                <img src="${item.image}" alt="${item.name}" style="width: 48px; height: 48px; border-radius: 6px; object-fit: cover; display: block;" />
+              </td>
+              <td style="vertical-align: middle;">
+                <p style="font-size: 12px; font-weight: 600; color: #111827; margin: 0;">${item.name}</p>
+                <p style="font-size: 10px; color: #9ca3af; margin: 2px 0 0;">${item.variant || ''}</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td style="padding: 10px; border-bottom: 1px solid #f3f4f6; text-align: center; font-size: 12px; color: #374151;">×${item.quantity}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #f3f4f6; text-align: right; font-size: 12px; font-weight: 600; color: #111827;">${item.price}</td>
+      </tr>
+    `;
+  });
+
+  // Send via EmailJS
+  emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
+    customer_name: orderData.customer.name,
+    customer_email: orderData.customer.email,
+    customer_phone: orderData.customer.phone,
+    customer_address: orderData.customer.address,
+    order_items: orderItemsHTML,        // ← this is the HTML with images
+    subtotal: orderData.subtotal,
+    delivery_fee: orderData.deliveryFee,
+    order_total: orderData.total,
+    payment_method: orderData.paymentMethod
+  });
+}
+
+
+   
         // ============================================================
 // PAYMENT PAGE — System to show payment details 
 // ============================================================
@@ -6108,7 +6158,7 @@ window.runBulkPriceEdit = async function() {
 
     let updated = 0;
     for (const product of targeted) {
-        const randomPrice = Math.round((Math.random() * (newMax - newMin) + newMin) * 100) / 100;
+        const too randomPrice = Math.round((Math.random() * (newMax - newMin) + newMin) * 100) / 100;
         await updateDoc(doc(db, 'products', product.id), { price: randomPrice });
         const localProd = window.appState.products.find(p => p.id === product.id);
         if (localProd) localProd.price = randomPrice;
