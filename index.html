@@ -2683,16 +2683,20 @@ const grandTotal = subtotal + deliveryTotal;
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     service_id: 'service_s5xw50d',
-                    template_id: 'template_uok7527',
+                    template_id: 'template_8w66avp',
                     user_id: 'qCNJIG5387KRxY4Zn',
                     template_params: {
-                        customer_name: customerInfo.fullName,
-                        customer_email: customerInfo.email,
-                        customer_phone: customerInfo.phone,
-                        customer_address: customerInfo.address + ', ' + customerInfo.city,
-                        order_items: window.appState.cart.map(i => i.name + ' x' + i.quantity + ' = R' + (i.price * i.quantity).toFixed(2)).join(' | '),
-                        order_total: 'R' + grandTotal.toFixed(2)
-                    }
+    email: 'darkmasterstore.za@beelzeapps.co.za',
+    order_id: 'ORD-' + Date.now().toString(36).toUpperCase(),
+    customer_name: customerInfo.fullName,
+    customer_email: customerInfo.email,
+    customer_phone: customerInfo.phone,
+    customer_address: customerInfo.address + ', ' + customerInfo.city + (customerInfo.postalCode ? ', ' + customerInfo.postalCode : ''),
+    order_items: window.appState.cart.map(i => i.name + ' x' + i.quantity + ' = R' + (i.price * i.quantity).toFixed(2)).join('\n'),
+    order_total: 'R' + grandTotal.toFixed(2),
+    reply_to: customerInfo.email
+}
+
                 })
             });
         } catch(emailErr) {
