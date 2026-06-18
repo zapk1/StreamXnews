@@ -4594,27 +4594,36 @@ function showSocialProof() {
     document.getElementById('sp-message').innerHTML = data.message;
     document.getElementById('sp-time').textContent = data.time;
     
+    const starsEl = document.getElementById('sp-stars');
     if (data.type === "review" && data.rating) {
-        document.getElementById('sp-stars').innerHTML = '★'.repeat(data.rating);
-        document.getElementById('sp-stars').style.display = 'block';
+        starsEl.innerHTML = '★'.repeat(data.rating);
+        starsEl.style.display = 'block';
     } else {
-        document.getElementById('sp-stars').style.display = 'none';
+        starsEl.style.display = 'none';
     }
     
     const popup = document.getElementById('social-proof-popup');
-    popup.style.transform = 'translateX(0)';   // ← FIXED
+    popup.style.transform = 'translateX(0)';
     lucide.createIcons();
     
-    spTimeout = setTimeout(() => {
+    clearTimeout(window.spTimeout); // Clear previous timeout
+    window.spTimeout = setTimeout(() => {
         hideSocialProof();
-    }, 3000);   // ← CHANGED to 10 seconds
+    }, 10000); // Hide after 10 seconds
 }
 
 function hideSocialProof() {
-    clearTimeout(spTimeout);
-    document.getElementById('social-proof-popup').style.transform = 'translateX(-400px)';   // ← FIXED
+    clearTimeout(window.spTimeout);
+    const popup = document.getElementById('social-proof-popup');
+    if (popup) {
+      popup.style.transform = 'translateX(-400px)';
+    }
+    // Schedule next popup
     setTimeout(showSocialProof, 60000);
 }
+
+// Make sure to declare the timeout variable in the global scope
+window.spTimeout = null; 
 
 // DRAGGABLE — add this below
 const popup = document.getElementById('social-proof-popup');
@@ -6158,7 +6167,7 @@ window.runBulkPriceEdit = async function() {
 
     let updated = 0;
     for (const product of targeted) {
-        const too randomPrice = Math.round((Math.random() * (newMax - newMin) + newMin) * 100) / 100;
+        const randomPrice = Math.round((Math.random() * (newMax - newMin) + newMin) * 100) / 100;
         await updateDoc(doc(db, 'products', product.id), { price: randomPrice });
         const localProd = window.appState.products.find(p => p.id === product.id);
         if (localProd) localProd.price = randomPrice;
